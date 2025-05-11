@@ -66,7 +66,7 @@ public:
                     frameScore += rolls[rollCountIndex + 2];
                 }
                 score += frameScore;
-                cout << "Frame 10: → " << frameScore << " (Total: " << score << ")" << endl;
+                cout << "Frame 10: " << frameScore << " (Total: " << score << ")" << endl;
             }
         }
 
