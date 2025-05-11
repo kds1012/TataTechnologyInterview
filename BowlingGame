@@ -1,0 +1,105 @@
+#include <iostream>
+#include <vector>
+
+int constexpr MAX_FRAME = 10;
+using namespace std;
+
+class Bowling
+{
+private:
+    vector<int> rolls;
+
+    // Strike: all 10 pins in one roll
+    bool isStrike(int index)
+    {
+        return rolls[index] == MAX_FRAME;
+    }
+
+    // Spare: all 10 pins in two rolls
+    bool isSpare(int index)
+    {
+        return rolls[index] + rolls[index + 1] == MAX_FRAME;
+    }
+
+public:
+    Bowling(const vector<int> &rolls) : rolls(rolls) {}
+
+    int calculateScore()
+    {
+        int score = 0;
+        int rollCountIndex = 0;
+
+        for (int frame = 0; frame < MAX_FRAME; ++frame)
+        {
+            if (frame < MAX_FRAME - 1)
+            {
+                if (isStrike(rollCountIndex))
+                {
+                    int bonus = rolls[rollCountIndex + 1] + rolls[rollCountIndex + 2];
+                    score += MAX_FRAME + bonus;
+                    cout << "Frame " << frame + 1 << ": Strike: 10 + " << bonus
+                         << " = " << (MAX_FRAME + bonus) << " (Total: " << score << ")" << endl;
+                    rollCountIndex += 1;
+                }
+                else if (isSpare(rollCountIndex))
+                {
+                    int bonus = rolls[rollCountIndex + 2];
+                    score += MAX_FRAME + bonus;
+                    cout << "Frame " << frame + 1 << ": Spare: 10 + " << bonus
+                         << " = " << (MAX_FRAME + bonus) << " (Total: " << score << ")" << endl;
+                    rollCountIndex += 2;
+                }
+                else
+                {
+                    int frameScore = rolls[rollCountIndex] + rolls[rollCountIndex + 1];
+                    score += frameScore;
+                    cout << "Frame " << frame + 1 << ": Normal: " << frameScore
+                         << " (Total: " << score << ")" << endl;
+                    rollCountIndex += 2;
+                }
+            }
+            else
+            {
+                int frameScore = rolls[rollCountIndex] + rolls[rollCountIndex + 1];
+                if (rolls[rollCountIndex] == MAX_FRAME || frameScore == MAX_FRAME)
+                {
+                    frameScore += rolls[rollCountIndex + 2];
+                }
+                score += frameScore;
+                cout << "Frame 10: → " << frameScore << " (Total: " << score << ")" << endl;
+            }
+        }
+
+        return score;
+    }
+};
+
+int main()
+{
+    vector<int> rolls;
+    int input;
+    cout << "Enter bowling rolls (maximum 21 entries, e.g. 10 for strike, 5 5 for spare):" << endl;
+    cout << "(Enter -1 to end early if fewer rolls are needed)" << endl;
+
+    while (rolls.size() < 21)
+    {
+        cout << "Roll " << rolls.size() + 1 << ": ";
+        cin >> input;
+
+        if (input == -1)
+            break;
+
+        if (input < 0 || input > 10)
+        {
+            cout << "Invalid roll. Enter a number between 0 and 10." << endl;
+            continue;
+        }
+
+        rolls.push_back(input);
+    }
+
+    Bowling game(rolls);
+    int totalScore = game.calculateScore();
+    cout << "\nTotal Score: " << totalScore << endl;
+    return 0;
+}
