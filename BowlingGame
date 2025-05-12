@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 
 int constexpr MAX_FRAME = 10;
 using namespace std;
@@ -9,13 +10,11 @@ class Bowling
 private:
     vector<int> rolls;
 
-    // Strike: all 10 pins in one roll
     bool isStrike(int index)
     {
         return rolls[index] == MAX_FRAME;
     }
 
-    // Spare: all 10 pins in two rolls
     bool isSpare(int index)
     {
         return rolls[index] + rolls[index + 1] == MAX_FRAME;
@@ -74,28 +73,93 @@ public:
     }
 };
 
+bool readValidInt(int &value)
+{
+    cin >> value;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return false;
+    }
+    return true;
+}
+
 int main()
 {
     vector<int> rolls;
     int input;
-    cout << "Enter bowling rolls (maximum 21 entries, e.g. 10 for strike, 5 5 for spare):" << endl;
-    cout << "(Enter -1 to end early if fewer rolls are needed)" << endl;
 
-    while (rolls.size() < 21)
+    cout << "Enter bowling scores for 10 frames." << endl;
+    cout << "Each roll must be a number between 0 and 10." << endl;
+
+    for (int frame = 1; frame <= MAX_FRAME; ++frame)
     {
-        cout << "Roll " << rolls.size() + 1 << ": ";
-        cin >> input;
-
-        if (input == -1)
-            break;
-
-        if (input < 0 || input > 10)
+        if (frame < MAX_FRAME)
         {
-            cout << "Invalid roll. Enter a number between 0 and 10." << endl;
-            continue;
-        }
+            cout << "Frame " << frame << ", Trial 1: ";
+            if (!readValidInt(input) || input < 0 || input > MAX_FRAME)
+            {
+                cout << "Invalid roll. Enter a number between 0 and 10." << endl;
+                --frame;
+                continue;
+            }
+            rolls.push_back(input);
 
-        rolls.push_back(input);
+            if (input != MAX_FRAME)
+            {
+                int secondInput;
+                cout << "Frame " << frame << ", Trial 2: ";
+                if (!readValidInt(secondInput) || secondInput < 0 || secondInput > MAX_FRAME || (input + secondInput > MAX_FRAME))
+                {
+                    cout << "Invalid second roll. The total for the frame cannot exceed 10." << endl;
+                    rolls.pop_back();
+                    --frame;
+                    continue;
+                }
+                rolls.push_back(secondInput);
+            }
+        }
+        else
+        {
+            // Frame 10 logic
+            cout << "Frame 10, Trial 1: ";
+            if (!readValidInt(input) || input < 0 || input > MAX_FRAME)
+            {
+                cout << "Invalid roll. Enter a number between 0 and 10." << endl;
+                --frame;
+                continue;
+            }
+            rolls.push_back(input);
+
+            int secondInput;
+            cout << "Frame 10, Trial 2: ";
+            if (!readValidInt(secondInput) || secondInput < 0 || secondInput > MAX_FRAME ||
+                (input != MAX_FRAME && input + secondInput > MAX_FRAME))
+            {
+                cout << "Invalid second roll." << endl;
+                rolls.pop_back();
+                --frame;
+                continue;
+            }
+            rolls.push_back(secondInput);
+
+            // If strike or spare, allow third trial
+            if (input == MAX_FRAME || input + secondInput == MAX_FRAME)
+            {
+                int thirdInput;
+                cout << "Frame 10, Trial 3: ";
+                if (!readValidInt(thirdInput) || thirdInput < 0 || thirdInput > MAX_FRAME)
+                {
+                    cout << "Invalid third roll." << endl;
+                    rolls.pop_back();
+                    rolls.pop_back();
+                    --frame;
+                    continue;
+                }
+                rolls.push_back(thirdInput);
+            }
+        }
     }
 
     Bowling game(rolls);
