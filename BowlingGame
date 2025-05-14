@@ -109,13 +109,15 @@ int main()
             if (input != MAX_FRAME)
             {
                 int secondInput;
-                cout << "Frame " << frame << ", Trial 2: ";
-                if (!readValidInt(secondInput) || secondInput < 0 || secondInput > MAX_FRAME || (input + secondInput > MAX_FRAME))
+                while (true)
                 {
-                    cout << "Invalid second roll. The total for the frame cannot exceed 10." << endl;
-                    rolls.pop_back();
-                    --frame;
-                    continue;
+                    cout << "Frame " << frame << ", Trial 2: ";
+                    if (!readValidInt(secondInput) || secondInput < 0 || secondInput > MAX_FRAME || (input + secondInput > MAX_FRAME))
+                    {
+                        cout << "Invalid second roll. The total for the frame cannot exceed 10." << endl;
+                        continue; // retry Trial 2 only
+                    }
+                    break;
                 }
                 rolls.push_back(secondInput);
             }
@@ -133,14 +135,16 @@ int main()
             rolls.push_back(input);
 
             int secondInput;
-            cout << "Frame 10, Trial 2: ";
-            if (!readValidInt(secondInput) || secondInput < 0 || secondInput > MAX_FRAME ||
-                (input != MAX_FRAME && input + secondInput > MAX_FRAME))
+            while (true)
             {
-                cout << "Invalid second roll." << endl;
-                rolls.pop_back();
-                --frame;
-                continue;
+                cout << "Frame 10, Trial 2: ";
+                if (!readValidInt(secondInput) || secondInput < 0 || secondInput > MAX_FRAME ||
+                    (input != MAX_FRAME && input + secondInput > MAX_FRAME))
+                {
+                    cout << "Invalid second roll." << endl;
+                    continue;
+                }
+                break;
             }
             rolls.push_back(secondInput);
 
@@ -148,14 +152,15 @@ int main()
             if (input == MAX_FRAME || input + secondInput == MAX_FRAME)
             {
                 int thirdInput;
-                cout << "Frame 10, Trial 3: ";
-                if (!readValidInt(thirdInput) || thirdInput < 0 || thirdInput > MAX_FRAME)
+                while (true)
                 {
-                    cout << "Invalid third roll." << endl;
-                    rolls.pop_back();
-                    rolls.pop_back();
-                    --frame;
-                    continue;
+                    cout << "Frame 10, Trial 3: ";
+                    if (!readValidInt(thirdInput) || thirdInput < 0 || thirdInput > MAX_FRAME)
+                    {
+                        cout << "Invalid third roll." << endl;
+                        continue;
+                    }
+                    break;
                 }
                 rolls.push_back(thirdInput);
             }
